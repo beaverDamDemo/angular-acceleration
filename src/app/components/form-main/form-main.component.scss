@@ -1,0 +1,19 @@
+button {
+  margin: 2px;
+
+  &.active {
+    background: greenyellow;
+  }
+}
+
+.btn-wide {
+  min-width: 220px;
+}
+
+.mat-mdc-card {
+  background: #ddd;
+}
+
+:host {
+  --mdc-protected-button-disabled-container-color: #777;
+}
