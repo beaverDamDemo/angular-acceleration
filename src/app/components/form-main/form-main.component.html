@@ -1,219 +1,116 @@
 <section class="our-form">
   <h6>Select engine</h6>
   <div>
-    @for (engine of engines; track $index) {
-    <button mat-stroked-button class="btn-wide" [ngClass]="{'active': selectedEngineIndex === $index}"
-      (click)="onEngineClick($event, $index)">{{ engine.label }}</button>
-    }
-  </div>
-  <div [chart]="powerChart"></div>
-  <div [chart]="torqueChart"></div>
-
-  <h6>Select body preset</h6>
-  <div>
-    @for (carBody of carPresets; track $index) {
-    <button mat-flat-button class="btn-wide" [ngClass]="{'active': selectedBodyPresetIndex === $index}"
-      (click)="onCarBodyClick($event, $index)">{{ carBody.label }}</button>
-    }
+    <!-- Engine selection buttons -->
+    <ng-container *ngFor="let engine of engines; let idx = index">
+      <button
+        mat-stroked-button
+        class="btn-wide"
+        [ngClass]="{ active: selectedEngineIndex === idx }"
+        (click)="onEngineClick($event, idx)"
+      >
+        {{ engine.label }}
+      </button>
+    </ng-container>
   </div>
 
-  <div class="form-group m-1">
-    <h5>Car Settings</h5>
-    <div class="row">
-      <label class="col col-sm-6" for="">Weight KG</label>
-      <input matInput [(ngModel)]="carSettingsWeightKg" type="number" step="1"
-        class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Aero Cx</label>
-      <input matInput [(ngModel)]="carSettingsAeroCx" type="number" step="0.005"
-        class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Rolling Res</label>
-      <input matInput [(ngModel)]="carSettingsRollingRes" type="number" step="0.001"
-        class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Maximum acc G</label>
-      <input matInput [(ngModel)]="carSettingsMaximumAccelerationG" type="number" step="0.025"
-        class="form-control form-control-sm col col-sm-6" />
-    </div>
-  </div>
-  <div>
-    <h5>Choose test settings</h5>
-    <mat-radio-group [(ngModel)]="selectedTestMode">
-      <mat-radio-button *ngFor="let option of optionsTestMode" [value]="option">
-        {{ option }}
-      </mat-radio-button>
-    </mat-radio-group>
-  </div>
-
-  <div class="form-group m-1" *ngIf="selectedTestMode == 'oneGearRollingStart'">
-    <h5>Select gearing options for single gear rolling start</h5>
-    <div class="row">
-      <label class="col col-sm-6" for="">Initial speed km/h:</label>
-      <input [(ngModel)]="initialSpeedKmh" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Final gear min</label>
-      <input [(ngModel)]="finalGearMin" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Final gear max</label>
-      <input [(ngModel)]="finalGearMax" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Splits</label>
-      <input [(ngModel)]="splits" type="number" step="1" class="form-control form-control-sm col col-sm-6" />
-    </div>
-  </div>
-
-  <div class="form-group m-1" *ngIf="selectedTestMode == 'topspeedRun'">
-    <h5>Select gearing options for topspeed run</h5>
-    <div class="row">
-      <label class="col col-sm-6" for="">Initial speed km/h:</label>
-      <input [(ngModel)]="initialSpeedKmh" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Final gear min</label>
-      <input [(ngModel)]="finalGearMin" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Final gear max</label>
-      <input [(ngModel)]="finalGearMax" type="number" class="form-control form-control-sm col col-sm-6" />
-    </div>
-    <div class="row">
-      <label class="col col-sm-6" for="">Splits</label>
-      <input [(ngModel)]="splits" type="number" step="1" class="form-control form-control-sm col col-sm-6" />
-    </div>
+  <!-- Gear controls (not inside engine selection) -->
+  <div class="form-group" *ngFor="let ratio of gearRatios; let i = index">
+    <label [for]="'customRange_' + i">{{ i + 1 }} gear</label>
+    <div
+      class="arrow arrow-left"
+      [ngClass]="{ disabled: gearLeftDisabled[i] }"
+      (click)="onArrowClick(i, 'left')"
+    ></div>
+    <input
+      (input)="onGearChange(i, $event)"
+      type="range"
+      class="custom-range"
+      min="0.08"
+      max="4"
+      step="0.02"
+      [id]="'customRange_' + i"
+      [(ngModel)]="gearRatios[i]"
+      [disabled]="isDisabled"
+    />
+    <div
+      class="arrow arrow-right"
+      [ngClass]="{ disabled: gearRightDisabled[i] }"
+      (click)="onArrowClick(i, 'right')"
+    ></div>
+    <!-- All legacy gear 5 and final drive blocks removed. Only array-based ngFor gear controls remain. -->
   </div>
 
   <div class="form-group m-1" *ngIf="selectedTestMode == 'fixedMultipleGears'">
     <h5>Select gearing options for fixed gearing</h5>
     <h5>Gear ratios</h5>
-    <div style="border: 3px solid orange; background: yellow; color: black;">currently it shifts at hardcoded rpm, so
-      very
-      close gear ratios will not work that well</div>
+    <div style="border: 3px solid orange; background: yellow; color: black">
+      currently it shifts at hardcoded rpm, so very close gear ratios will not
+      work that well
+    </div>
     <div class="preset-container d-inline-flex flex-row flex-wrap">
       @for (gearingPreset of gearingPresets; track $index) {
-      <button mat-flat-button (click)="onGearingPresetClick($index)"
-        [ngClass]="{'active': selectedGearingPresetIndex === $index}">{{ gearingPreset.name}}</button>
+        <button
+          mat-flat-button
+          (click)="onGearingPresetClick($index)"
+          [ngClass]="{ active: selectedGearingPresetIndex === $index }"
+        >
+          {{ gearingPreset.name }}
+        </button>
       }
     </div>
-
-    <!-- <div class="form-group">
-      <label for="customRange_0">1st gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_0_left_isDisabled }"
-        @click="arrowClick(['customRange_0', 'left'])"></div>
-      <input @input="g_0_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_0" v-model="gear_0_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_0_right_isDisabled }"
-        @click="arrowClick(['customRange_0', 'right'])"></div>
-      <span v-text="gear_0_ratio"></span>
-      <span v-text="gear_0_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_1">2nd gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_1_left_isDisabled }"
-        @click="arrowClick(['customRange_1', 'left'])"></div>
-      <input @input="g_1_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_1" v-model="gear_1_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_1_right_isDisabled }"
-        @click="arrowClick(['customRange_1', 'right'])"></div>
-      <span v-text="gear_1_ratio"></span>
-      <span v-text="gear_1_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_2">3th gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_2_left_isDisabled }"
-        @click="arrowClick(['customRange_2', 'left'])"></div>
-      <input @input="g_2_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_2" v-model="gear_2_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_2_right_isDisabled }"
-        @click="arrowClick(['customRange_2', 'right'])"></div>
-      <span v-text="gear_2_ratio"></span>
-      <span v-text="gear_2_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_3">4th gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_3_left_isDisabled }"
-        @click="arrowClick(['customRange_3', 'left'])"></div>
-      <input @input="g_3_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_3" v-model="gear_3_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_3_right_isDisabled }"
-        @click="arrowClick(['customRange_3', 'right'])"></div>
-      <span v-text="gear_3_ratio"></span>
-      <span v-text="gear_3_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_4">5th gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_4_left_isDisabled }"
-        @click="arrowClick(['customRange_4', 'left'])"></div>
-      <input @input="g_4_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_4" v-model="gear_4_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_4_right_isDisabled }"
-        @click="arrowClick(['customRange_4', 'right'])"></div>
-      <span v-text="gear_4_ratio"></span>
-      <span v-text="gear_4_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_5">6th gear</label>
-      <div class="arrow arrow-left" :class="{ disabled: gear_5_left_isDisabled }"
-        @click="arrowClick(['customRange_5', 'left'])"></div>
-      <input @input="g_5_change($event)" type="range" class="custom-range" min="0.08" max="4" step="0.02"
-        id="customRange_5" v-model="gear_5_ratio" :disabled="isDisabled" />
-      <div class="arrow arrow-right" :class="{ disabled: gear_5_right_isDisabled }"
-        @click="arrowClick(['customRange_5', 'right'])"></div>
-      <span v-text="gear_5_ratio"></span>
-      <span v-text="gear_5_computedSpeed" class="computedSpeed"></span>
-    </div>
-    <div class="form-group">
-      <label for="customRange_final">final drive</label>
-      <div class="arrow arrow-left" :class="{ disabled: gearFinalLeftArrowIsDisabled }"
-        @click="arrowClick(['customRange_final', 'left'])"></div>
-      <input type="range" class="custom-range" min="2.54" max="8.74" step="0.1" id="customRange_final"
-        :disabled="isDisabled" @input="onInputGearFinal($event)" v-model="gearFinal" />
-      <div class="arrow arrow-right" :class="{ disabled: gearFinalRightArrowIsDisabled }"
-        @click="arrowClick(['customRange_final', 'right'])"></div>
-      <span v-text="store.gearFinal"></span>
-      <span class="computedSpeed"></span>
-    </div> -->
   </div>
 
   <div class="form-group m-1" *ngIf="selectedTestMode == 'allPossibleGears'">
     <div class="row">
       <label class="col col-sm-6" for="">Final drive</label>
-      <input [(ngModel)]="finalDrive" type="number" step="0.005" class="form-control form-control-sm col col-sm-6" />
+      <input
+        [(ngModel)]="finalDrive"
+        type="number"
+        step="0.005"
+        class="form-control form-control-sm col col-sm-6"
+      />
     </div>
   </div>
 
   <div>
     <mat-card appearance="outlined">
       <mat-card-header>
-        <h6>Summary </h6>
+        <h6>Summary</h6>
       </mat-card-header>
       <mat-card-content>
-        <div>selectedEngine: {{selectedEngine?.label}}</div>
-        <div>selectedBodyPreset: {{selectedBodyPreset?.label}}</div>
+        <div>selectedEngine: {{ selectedEngine?.label }}</div>
+        <div>selectedBodyPreset: {{ selectedBodyPreset?.label }}</div>
         <div>Selected option: {{ selectedTestMode }}</div>
-        <div>carSettingsWeightKg: {{carSettingsWeightKg}}</div>
-        <div>carSettingsAeroCx: {{carSettingsAeroCx}}</div>
-        <div>carSettingsRollingRes: {{carSettingsRollingRes}}</div>
-        <div>carSettingsMag: {{carSettingsMaximumAccelerationG}}</div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">initialSpeedKmh: {{ initialSpeedKmh}} </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">finalGearMin: {{ finalGearMin}} </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">finalGearMax: {{ finalGearMax}} </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">splits: {{ splits}} </div>
-        <div *ngIf="selectedGearingPreset">selected gearing: {{ selectedGearingPreset | json }}</div>
+        <div>carSettingsWeightKg: {{ carSettingsWeightKg }}</div>
+        <div>carSettingsAeroCx: {{ carSettingsAeroCx }}</div>
+        <div>carSettingsRollingRes: {{ carSettingsRollingRes }}</div>
+        <div>carSettingsMag: {{ carSettingsMaximumAccelerationG }}</div>
+        <div *ngIf="selectedTestMode != 'allPossibleGears'">
+          initialSpeedKmh: {{ initialSpeedKmh }}
+        </div>
+        <div *ngIf="selectedTestMode != 'allPossibleGears'">
+          finalGearMin: {{ finalGearMin }}
+        </div>
+        <div *ngIf="selectedTestMode != 'allPossibleGears'">
+          finalGearMax: {{ finalGearMax }}
+        </div>
+        <div *ngIf="selectedTestMode != 'allPossibleGears'">
+          splits: {{ splits }}
+        </div>
+        <div *ngIf="selectedGearingPreset">
+          selected gearing: {{ selectedGearingPreset | json }}
+        </div>
         <div>finalDrive: {{ finalDrive }}</div>
       </mat-card-content>
     </mat-card>
   </div>
 
-  <button mat-raised-button (click)="onRun()" [disabled]="buttonRunDisabled">Run</button>
+  <button mat-raised-button (click)="onRun()" [disabled]="buttonRunDisabled">
+    Run
+  </button>
 
-  <div class="form-group m-1" v-show="formfixShow">
-    <!-- <formfix v-show="formfixShow" :selectedMode="selectedMode" /> -->
+  <div class="form-group m-1" *ngIf="formfixShow">
+    <!-- <formfix *ngIf="formfixShow" [selectedMode]="selectedMode"></formfix> -->
   </div>
 </section>

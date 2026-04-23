@@ -11,12 +11,54 @@ import { ChartModule } from 'angular-highcharts';
 import { Chart } from 'angular-highcharts';
 import { AccelerationFunctionsService } from '../../shared/services/acceleration-functions.service';
 @Component({
-    selector: 'app-form-main',
-    imports: [CommonModule, MatSelectModule, MatInputModule, MatFormFieldModule, MatButtonModule, MatRadioModule, FormsModule, MatCardModule, ChartModule],
-    templateUrl: './form-main.component.html',
-    styleUrl: './form-main.component.scss'
+  selector: 'app-form-main',
+  imports: [
+    CommonModule,
+    MatSelectModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatRadioModule,
+    FormsModule,
+    MatCardModule,
+    ChartModule,
+  ],
+  templateUrl: './form-main.component.html',
+  styleUrl: './form-main.component.scss',
 })
 export class FormMainComponent implements OnInit {
+  // Number of gears (can be adjusted as needed)
+  numGears = 6;
+  gearRatios: number[] = [2.66, 1.78, 1.3, 1.0, 0.74, 0.5];
+  computedSpeeds: number[] = [0, 0, 0, 0, 0, 0];
+  isDisabled = false;
+
+  // For arrow enable/disable logic (optional, can be improved)
+  gearLeftDisabled: boolean[] = [false, false, false, false, false, false];
+  gearRightDisabled: boolean[] = [false, false, false, false, false, false];
+
+  // Handlers for range input changes
+  onGearChange(index: number, event: any) {
+    this.gearRatios[index] = parseFloat(event.target.value);
+    this.computedSpeeds[index] = this.calculateComputedSpeed(index);
+  }
+
+  // Example computed speed calculation (replace with real logic)
+  calculateComputedSpeed(index: number): number {
+    // Placeholder: just return ratio * 100 for demo
+    return Math.round(this.gearRatios[index] * 100);
+  }
+
+  // Arrow click handlers
+  onArrowClick(index: number, direction: 'left' | 'right') {
+    const step = 0.02;
+    if (direction === 'left') {
+      this.gearRatios[index] = Math.max(0.08, this.gearRatios[index] - step);
+    } else {
+      this.gearRatios[index] = Math.min(4, this.gearRatios[index] + step);
+    }
+    this.computedSpeeds[index] = this.calculateComputedSpeed(index);
+  }
   finalGearMin = 200;
   finalGearMax = 400;
   calculate_interval_ms: number = 50;
@@ -26,7 +68,7 @@ export class FormMainComponent implements OnInit {
   myForm_0_isShown = true;
   formfixShow = false;
   finalDrive: number = 3.94;
-  gearRatios: any[] = [];
+  // gearRatios now handled above
   tanja: any[] = [];
   love: any[] = [];
   engines: any[] = [
@@ -35,7 +77,10 @@ export class FormMainComponent implements OnInit {
       effectiveMaxHp: '-',
       maxRpm: 6000,
       shiftRpm: 5700,
-      torqueData: [621, 675, 721, 768, 804, 842, 875, 911, 934, 957, 978, 998, 1003, 1017, 1039, 1023, 1005, 988, 978, 966, 944, 867, 789, 710],
+      torqueData: [
+        621, 675, 721, 768, 804, 842, 875, 911, 934, 957, 978, 998, 1003, 1017,
+        1039, 1023, 1005, 988, 978, 966, 944, 867, 789, 710,
+      ],
       torqueLookupTable: [],
       powerLookupTable: [],
     },
@@ -45,7 +90,8 @@ export class FormMainComponent implements OnInit {
       maxRpm: 6000,
       shiftRpm: 5450,
       torqueData: [
-        731, 779, 816, 854, 888, 924, 948, 971, 992, 1012, 1018, 1032, 1054, 1053, 1038, 1020, 1002, 992, 980, 958, 890, 830, 760, 680,
+        731, 779, 816, 854, 888, 924, 948, 971, 992, 1012, 1018, 1032, 1054,
+        1053, 1038, 1020, 1002, 992, 980, 958, 890, 830, 760, 680,
       ],
       torqueLookupTable: [],
       powerLookupTable: [],
@@ -64,7 +110,10 @@ export class FormMainComponent implements OnInit {
       effectiveMaxHp: '-',
       maxRpm: 6000,
       shiftRpm: 6000,
-      torqueData: [495, 551, 602, 654, 698, 745, 780, 816, 848, 883, 906, 928, 948, 967, 972, 986, 1007, 992, 957, 948, 937, 926, 906, 782],
+      torqueData: [
+        495, 551, 602, 654, 698, 745, 780, 816, 848, 883, 906, 928, 948, 967,
+        972, 986, 1007, 992, 957, 948, 937, 926, 906, 782,
+      ],
       torqueLookupTable: [],
       powerLookupTable: [],
     },
@@ -73,7 +122,10 @@ export class FormMainComponent implements OnInit {
       effectiveMaxHp: '-',
       maxRpm: 6000,
       shiftRpm: 6000,
-      torqueData: [503, 559, 611, 664, 709, 756, 792, 828, 861, 896, 920, 942, 962, 982, 987, 1001, 1022, 1007, 972, 962, 951, 940, 920, 794],
+      torqueData: [
+        503, 559, 611, 664, 709, 756, 792, 828, 861, 896, 920, 942, 962, 982,
+        987, 1001, 1022, 1007, 972, 962, 951, 940, 920, 794,
+      ],
       torqueLookupTable: [],
       powerLookupTable: [],
     },
@@ -82,7 +134,10 @@ export class FormMainComponent implements OnInit {
       effectiveMaxHp: '-',
       maxRpm: 5750,
       shiftRpm: 5600,
-      torqueData: [280, 330, 290, 300, 308, 315, 322, 338, 345, 354, 433, 544, 544, 561, 584, 591, 612, 626, 618, 622, 612, 591, 578, 561, 527, 496],
+      torqueData: [
+        280, 330, 290, 300, 308, 315, 322, 338, 345, 354, 433, 544, 544, 561,
+        584, 591, 612, 626, 618, 622, 612, 591, 578, 561, 527, 496,
+      ],
       torqueLookupTable: [],
       powerLookupTable: [],
     },
@@ -100,9 +155,18 @@ export class FormMainComponent implements OnInit {
       effectiveMaxHp: '-',
       maxRpm: 8250,
       shiftRpm: 8250,
-      rpmDataWIP: [2008, 2502, 3001, 3508, 4004, 4520, 5021, 5525, 6015, 6525, 7015, 7524, 8011, 8263],
-      torqueData: [222.6, 232.8, 249.6, 262.9, 262.4, 312.3, 342.2, 355.4, 382.5, 386.4, 385.2, 382.9, 351.8, 340.7],
-      psDataWIP: [63.7, 82.9, 106.6, 131.3, 149.6, 201.0, 244.6, 279.6, 327.6, 359.0, 384.7, 410.2, 401.3, 400.9],
+      rpmDataWIP: [
+        2008, 2502, 3001, 3508, 4004, 4520, 5021, 5525, 6015, 6525, 7015, 7524,
+        8011, 8263,
+      ],
+      torqueData: [
+        222.6, 232.8, 249.6, 262.9, 262.4, 312.3, 342.2, 355.4, 382.5, 386.4,
+        385.2, 382.9, 351.8, 340.7,
+      ],
+      psDataWIP: [
+        63.7, 82.9, 106.6, 131.3, 149.6, 201.0, 244.6, 279.6, 327.6, 359.0,
+        384.7, 410.2, 401.3, 400.9,
+      ],
     },
     {
       label: 'Aprilia RS125',
@@ -110,8 +174,9 @@ export class FormMainComponent implements OnInit {
       maxRpm: 11250,
       shiftRpm: 10750,
       torqueData: [
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4.5, 5, 6.75, 7, 7, 6.75, 7, 7, 7.5, 6.75, 7, 7.75, 8.5, 10.75, 11, 11.25, 11.5, 13,
-        13.25, 13.5, 13.75, 13.25, 13, 14.25, 14.5, 14.5, 14.25, 12.5, 7, 4,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4.5, 5, 6.75, 7, 7,
+        6.75, 7, 7, 7.5, 6.75, 7, 7.75, 8.5, 10.75, 11, 11.25, 11.5, 13, 13.25,
+        13.5, 13.75, 13.25, 13, 14.25, 14.5, 14.5, 14.25, 12.5, 7, 4,
       ],
     },
     {
@@ -120,8 +185,10 @@ export class FormMainComponent implements OnInit {
       maxRpm: 11250,
       shiftRpm: 10750,
       torqueData: [
-        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 45, 50, 67.5, 70, 70, 67.5, 70, 70, 75, 67.5, 70, 77.5, 85, 107.5, 110,
-        112.5, 115, 130, 132.5, 135, 137.5, 132.5, 130, 142.5, 145, 145, 142.5, 125, 70, 40,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 45, 50,
+        67.5, 70, 70, 67.5, 70, 70, 75, 67.5, 70, 77.5, 85, 107.5, 110, 112.5,
+        115, 130, 132.5, 135, 137.5, 132.5, 130, 142.5, 145, 145, 142.5, 125,
+        70, 40,
       ],
     },
   ];
@@ -205,7 +272,7 @@ export class FormMainComponent implements OnInit {
     },
     {
       name: 'BMW 318d f31',
-      gearRatios: [4.002, 2.109, 1.380, 1.000, 0.781, 0.645],
+      gearRatios: [4.002, 2.109, 1.38, 1.0, 0.781, 0.645],
       finalDrive: 3.231,
     },
     {
@@ -235,28 +302,32 @@ export class FormMainComponent implements OnInit {
   buttonRunDisabled: boolean = false;
   powerChart = new Chart({
     title: {
-      text: 'power curve'
+      text: 'power curve',
     },
-    series: [{
-      type: 'area',
-      name: 'power ps',
-      data: []
-    }]
+    series: [
+      {
+        type: 'area',
+        name: 'power ps',
+        data: [],
+      },
+    ],
   });
   torqueChart = new Chart({
     title: {
-      text: 'torque curve'
+      text: 'torque curve',
     },
-    series: [{
-      type: 'area',
-      name: 'torque Nm',
-      data: []
-    }]
+    series: [
+      {
+        type: 'area',
+        name: 'torque Nm',
+        data: [],
+      },
+    ],
   });
 
-  constructor(private accelerationFunctionsService: AccelerationFunctionsService) {
-
-  }
+  constructor(
+    private accelerationFunctionsService: AccelerationFunctionsService,
+  ) {}
   ngOnInit(): void {
     this.selectedEngine = this.engines[0];
     this.selectedBodyPreset = this.carPresets[0];
@@ -273,11 +344,19 @@ export class FormMainComponent implements OnInit {
     // this.torqueChart.addSeries([], false, false);
 
     let i = 0;
-    const split = this.selectedEngine.maxRpm / (this.selectedEngine.powerLookupTable.length - 1);
+    const split =
+      this.selectedEngine.maxRpm /
+      (this.selectedEngine.powerLookupTable.length - 1);
 
     let append = () => {
-      this.powerChart.addPoint([i * (split), this.selectedEngine.powerLookupTable[i]]);
-      this.torqueChart.addPoint([i * (split), this.selectedEngine.torqueLookupTable[i]]);
+      this.powerChart.addPoint([
+        i * split,
+        this.selectedEngine.powerLookupTable[i],
+      ]);
+      this.torqueChart.addPoint([
+        i * split,
+        this.selectedEngine.torqueLookupTable[i],
+      ]);
 
       if (i <= this.selectedEngine.powerLookupTable.length) {
         i++;
@@ -285,7 +364,7 @@ export class FormMainComponent implements OnInit {
       }
     };
     append();
-  };
+  }
   onCarBodyClick(e: Event, index: number): void {
     this.selectedBodyPreset = this.carPresets[index];
     this.selectedBodyPresetIndex = index;
@@ -304,20 +383,31 @@ export class FormMainComponent implements OnInit {
     this.carSettingsMaximumAccelerationG = this.selectedBodyPreset.maximumAccG;
   }
 
-  calculatePower(speedMs: number, executionTime: number, _that: { divRpm: number; }, gearLength: number) {
+  calculatePower(
+    speedMs: number,
+    executionTime: number,
+    _that: { divRpm: number },
+    gearLength: number,
+  ) {
     var currentRpm = null;
     var IDs: any = new Object();
     const clutchSlipStartTimeMs = 1299;
 
-    if ((executionTime < clutchSlipStartTimeMs) && speedMs < 10) {
-      IDs[0] = this.selectedEngine.powerLookupTable[Math.floor((this.selectedEngine.powerLookupTable.length * 1) / 2)];
+    if (executionTime < clutchSlipStartTimeMs && speedMs < 10) {
+      IDs[0] =
+        this.selectedEngine.powerLookupTable[
+          Math.floor((this.selectedEngine.powerLookupTable.length * 1) / 2)
+        ];
       IDs[1] = (this.selectedEngine.maxRpm * 2) / 3;
       return IDs;
     } else {
       currentRpm = (speedMs / gearLength) * 3.6 * this.selectedEngine.maxRpm;
       // console.log(' current rpm: ', Math.round(currentRpm/50)*50, ' power: ', Math.round(_that.powerLookupTable[Math.floor(currentRpm / _that.divRpm)]), ' kW');
       /* HARDCODED */
-      var res = this.selectedEngine.powerLookupTable[Math.floor(currentRpm / _that.divRpm)];
+      var res =
+        this.selectedEngine.powerLookupTable[
+          Math.floor(currentRpm / _that.divRpm)
+        ];
       IDs[0] = res;
       IDs[1] = Math.round(currentRpm / 50) * 50;
       if (isNaN(res)) {
@@ -327,7 +417,7 @@ export class FormMainComponent implements OnInit {
       }
       return IDs;
     }
-  };
+  }
 
   fillTorqueLookupTable() {
     const en = this.selectedEngine.torqueData;
@@ -341,9 +431,13 @@ export class FormMainComponent implements OnInit {
       maxKwAtRpm = 0;
 
     for (let i = 0; i <= en.length; i++) {
-      torStep.push(i * this.selectedEngine.maxRpm / (en.length - 1));
+      torStep.push((i * this.selectedEngine.maxRpm) / (en.length - 1));
     }
-    for (let currentRpm = 0; currentRpm <= this.selectedEngine.maxRpm; currentRpm += this.divRpm) {
+    for (
+      let currentRpm = 0;
+      currentRpm <= this.selectedEngine.maxRpm;
+      currentRpm += this.divRpm
+    ) {
       let i = 0,
         exitN = 83;
       while (currentRpm > torStep[i] && i < exitN) {
@@ -352,7 +446,7 @@ export class FormMainComponent implements OnInit {
       let result = ((torStep[i] - currentRpm) / difference) * en[i - 1];
       result += ((currentRpm - torStep[i - 1]) / difference) * en[i];
       torqueLookupTable.push(result);
-      let tmp = (result) * currentRpm / 7030;
+      let tmp = (result * currentRpm) / 7030;
       tmpPowerLookupTable.push(tmp);
       if (tmp > maxKw) {
         maxKw = tmp;
@@ -362,7 +456,8 @@ export class FormMainComponent implements OnInit {
     }
     this.selectedEngine.torqueLookupTable = torqueLookupTable;
     this.selectedEngine.powerLookupTable = tmpPowerLookupTable;
-    this.selectedEngine.effectiveMaxHp = '(' + Math.round(maxKw) + "hp@" + maxKwAtRpm + "rpm)";
+    this.selectedEngine.effectiveMaxHp =
+      '(' + Math.round(maxKw) + 'hp@' + maxKwAtRpm + 'rpm)';
   }
 
   onRun(): Promise<string> {
@@ -371,18 +466,21 @@ export class FormMainComponent implements OnInit {
 
       if (this.selectedTestMode === 'oneGearRollingStart') {
         for (let i = 0; i < this.splits; i++) {
-          const currentGearLength = this.finalGearMin + (i / (this.splits - 1)) * (this.finalGearMax - this.finalGearMin);
+          const currentGearLength =
+            this.finalGearMin +
+            (i / (this.splits - 1)) * (this.finalGearMax - this.finalGearMin);
           this.runTestModeOneGearRolling(currentGearLength, false);
         }
       }
       if (this.selectedTestMode === 'topspeedRun') {
         for (let i = 0; i < this.splits; i++) {
-          const currentGearLength = this.finalGearMin + (i / (this.splits - 1)) * (this.finalGearMax - this.finalGearMin);
+          const currentGearLength =
+            this.finalGearMin +
+            (i / (this.splits - 1)) * (this.finalGearMax - this.finalGearMin);
           this.runTestModeOneGearRolling(currentGearLength, true);
         }
       }
       if (this.selectedTestMode === 'fixedMultipleGears') {
-
       }
       if (this.selectedTestMode === 'allPossibleGears') {
         // const gear_0 = [3.6, 3.2, 2.8, 2.6, 2.4, 2.2];
@@ -410,7 +508,7 @@ export class FormMainComponent implements OnInit {
         const gear_2 = [2.2, 1.8, 1.5, 1.3];
         const gear_3 = [1.6, 1.4, 1.2, 1.04];
         const gear_4 = [1.3, 1.1, 0.9, 0.74, 0.68];
-        const gear_5 = [0.8, 0.66, 0.56, 0.52, 0.50, 0.48];
+        const gear_5 = [0.8, 0.66, 0.56, 0.52, 0.5, 0.48];
         // 20.000 runs, 17 sekund za 10 ms, 9 MB
         // 20.000 runs, 3 sekunde za 50 ms
 
@@ -430,8 +528,15 @@ export class FormMainComponent implements OnInit {
                     if (gear_4[m] <= gear_5[n]) continue;
 
                     total++;
-                    const tmp = [gear_0[i], gear_1[j], gear_2[k], gear_3[l], gear_4[m], gear_5[n]];
-                    const res = (this.runWithGearShifting(tmp, 3.94));
+                    const tmp = [
+                      gear_0[i],
+                      gear_1[j],
+                      gear_2[k],
+                      gear_3[l],
+                      gear_4[m],
+                      gear_5[n],
+                    ];
+                    const res = this.runWithGearShifting(tmp, 3.94);
                     results.push(res);
                   }
                 }
@@ -450,13 +555,13 @@ export class FormMainComponent implements OnInit {
             } else if (a.speedKmh > b.speedKmh) {
               return -1;
             } else {
-              return (a.lastRpm < b.lastRpm ? 1 : -1);
+              return a.lastRpm < b.lastRpm ? 1 : -1;
             }
           }
         });
         console.table(results);
         console.log('best result: ', results[0]);
-        console.log("total: ", total);
+        console.log('total: ', total);
         this.buttonRunDisabled = false;
       }
     });
@@ -472,19 +577,34 @@ export class FormMainComponent implements OnInit {
     var interval = false;
     var currentRpm;
     let speedGainThreshold;
-    isTopspeedRun == true ? (speedGainThreshold = 0.0005) : (speedGainThreshold = -1);
-    isTopspeedRun == true ? maximumDistance = 9999 : 1609;
+    isTopspeedRun == true
+      ? (speedGainThreshold = 0.0005)
+      : (speedGainThreshold = -1);
+    isTopspeedRun == true ? (maximumDistance = 9999) : 1609;
     var currentSpeedMs = this.initialSpeedKmh / 3.6;
     var arrResult = [];
 
-    while (traveledDistance < maximumDistance && executionTime < 180000 && speedGain > speedGainThreshold) {
-      if (maximumDistance - 30 < traveledDistance && traveledDistance < maximumDistance + 100 && interval == false) {
+    while (
+      traveledDistance < maximumDistance &&
+      executionTime < 180000 &&
+      speedGain > speedGainThreshold
+    ) {
+      if (
+        maximumDistance - 30 < traveledDistance &&
+        traveledDistance < maximumDistance + 100 &&
+        interval == false
+      ) {
         interval = true;
       }
 
       step_count++;
       executionTime = executionTime + this.calculate_interval_ms;
-      let cp = this.calculatePower(currentSpeedMs, executionTime, this, currentGearLength);
+      let cp = this.calculatePower(
+        currentSpeedMs,
+        executionTime,
+        this,
+        currentGearLength,
+      );
       power = cp[0];
       currentRpm = cp[1];
 
@@ -498,10 +618,25 @@ export class FormMainComponent implements OnInit {
       );
       speedGain = acceleration * this.calculate_interval_ms;
       currentSpeedMs += speedGain;
-      traveledDistance = traveledDistance + ((currentSpeedMs + speedGain / 2) * this.calculate_interval_ms) / 1000;
-      arrResult.push([Math.round(currentSpeedMs * 3.6), Math.floor(traveledDistance), executionTime / 1000, power, currentRpm]);
+      traveledDistance =
+        traveledDistance +
+        ((currentSpeedMs + speedGain / 2) * this.calculate_interval_ms) / 1000;
+      arrResult.push([
+        Math.round(currentSpeedMs * 3.6),
+        Math.floor(traveledDistance),
+        executionTime / 1000,
+        power,
+        currentRpm,
+      ]);
     }
-    console.log('final speed: ', Math.round(currentSpeedMs * 3.6), 'km/h distance: ', Math.floor(traveledDistance), "m, exetime: ", executionTime / 1000 + 's');
+    console.log(
+      'final speed: ',
+      Math.round(currentSpeedMs * 3.6),
+      'km/h distance: ',
+      Math.floor(traveledDistance),
+      'm, exetime: ',
+      executionTime / 1000 + 's',
+    );
     console.table(arrResult);
 
     this.buttonRunDisabled = false;
@@ -524,7 +659,11 @@ export class FormMainComponent implements OnInit {
     let step_count = 0;
 
     for (let i = 0; i < gearRatios.length; i++) {
-      gearLength.push((this.transmissionConstant * this.selectedEngine.maxRpm) / gearRatios[i] / this.finalDrive);
+      gearLength.push(
+        (this.transmissionConstant * this.selectedEngine.maxRpm) /
+          gearRatios[i] /
+          this.finalDrive,
+      );
       currentGearing.push(gearRatios[i]);
     }
 
@@ -541,12 +680,20 @@ export class FormMainComponent implements OnInit {
       step_count++;
       executionTime = executionTime + this.calculate_interval_ms;
 
-      let cp = this.calculatePower(currentSpeedMs, executionTime, this, gearLength[currentGearIndex]);
+      let cp = this.calculatePower(
+        currentSpeedMs,
+        executionTime,
+        this,
+        gearLength[currentGearIndex],
+      );
       power = cp[0];
       currentRpm = cp[1];
       lastRpm = currentRpm;
 
-      if (currentRpm > this.selectedEngine.shiftRpm && currentGearIndex + 1 < gearLength.length)
+      if (
+        currentRpm > this.selectedEngine.shiftRpm &&
+        currentGearIndex + 1 < gearLength.length
+      )
         currentGearIndex++;
 
       acceleration = this.accelerationFunctionsService.getAccelerationCalc(
@@ -559,14 +706,16 @@ export class FormMainComponent implements OnInit {
       );
       speedGain = acceleration * this.calculate_interval_ms;
       currentSpeedMs += speedGain;
-      distance = distance + ((currentSpeedMs + speedGain / 2) * this.calculate_interval_ms) / 1000;
+      distance =
+        distance +
+        ((currentSpeedMs + speedGain / 2) * this.calculate_interval_ms) / 1000;
     }
     return {
-      "executionTime": executionTime,
-      "speedKmh": Math.round(currentSpeedMs * 3.6),
-      "currentGearIndex + 1:": currentGearIndex + 1,
-      "lastRpm": lastRpm,
-      "currentGearing": currentGearing
+      executionTime: executionTime,
+      speedKmh: Math.round(currentSpeedMs * 3.6),
+      'currentGearIndex + 1:': currentGearIndex + 1,
+      lastRpm: lastRpm,
+      currentGearing: currentGearing,
     };
   }
 }
