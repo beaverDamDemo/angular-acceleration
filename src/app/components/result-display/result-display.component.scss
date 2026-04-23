@@ -1,0 +1,13 @@
+
+:host {
+	display: block;
+	margin-top: 32px;
+}
+
+p {
+	color: var(--color-accent);
+	background: var(--color-bg-cream);
+	border-radius: 8px;
+	padding: 16px;
+	box-shadow: 0 1px 6px rgba(0,0,0,0.04); /* Consider adding a new variable if this shadow is reused */
+}

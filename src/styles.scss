@@ -1,10 +1,94 @@
 /* You can add global styles to this file, and also import other style files */
 
-html,
-body {
-  height: 100%;
+/* CSS Variables for color palette */
+:root {
+  --color-bg-gold: rgb(219, 197, 96);
+  --color-accent: rgb(196, 50, 83);
+  --color-bg-cream: rgb(238, 213, 100);
+  --color-white: #fff;
+  --color-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --color-shadow-card: 0 2px 12px rgba(0,0,0,0.07);
+  --color-gray-border: #bdbdbd;
+  --color-primary: rgb(0, 188, 212); /* Default Angular Material cyan */
+  --color-black: #111;
 }
 
-body {
+html, body {
+  height: 100%;
+  margin: 0;
+  background: repeating-linear-gradient(135deg, var(--color-bg-gold), var(--color-bg-gold) 40px, var(--color-bg-cream) 40px, var(--color-bg-cream) 80px);
+  color: rgb(196, 50, 83);
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+main.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // background: var(--color-bg-gold);
+}
+
+.content {
+  width: 100%;
+  max-width: 900px;
+  background: var(--color-bg-cream);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+}
+
+/* Angular Material theme overrides */
+.mat-mdc-card, .mat-card {
+  background: var(--color-bg-cream) !important;
+  color: var(--color-accent) !important;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.mat-mdc-raised-button, .mat-raised-button, .mat-mdc-stroked-button, .mat-stroked-button {
+  background: var(--color-accent) !important;
+  color: #fff !important;
+  border-radius: 8px;
+  font-weight: 500;
+  margin: 4px 0;
+  transition: background 0.2s;
+}
+.mat-mdc-raised-button:hover, .mat-raised-button:hover, .mat-mdc-stroked-button:hover, .mat-stroked-button:hover {
+  background: var(--color-bg-cream) !important;
+  color: var(--color-accent) !important;
+  border: 2px solid var(--color-accent);
+}
+
+.mat-mdc-outlined-button:not(:disabled) {
+  color: var(--color-black) !important;
+  border-color: var(--color-black) !important;
+}
+
+.mat-mdc-outlined-button:hover:not(:disabled) {
+  background: var(--color-bg-cream) !important;
+  color: var(--color-black) !important;
+  border-color: var(--color-black) !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--color-accent);
+}
+input[type="range"]::-moz-range-thumb {
+  background: var(--color-accent);
+}
+input[type="range"]::-ms-thumb {
+  background: var(--color-accent);
+}
+
+label {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .content {
+    padding: 12px 2vw;
+  }
 }
