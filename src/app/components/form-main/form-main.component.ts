@@ -11,11 +11,10 @@ import { ChartModule } from 'angular-highcharts';
 import { Chart } from 'angular-highcharts';
 import { AccelerationFunctionsService } from '../../shared/services/acceleration-functions.service';
 @Component({
-  selector: 'app-form-main',
-  standalone: true,
-  imports: [CommonModule, MatSelectModule, MatInputModule, MatFormFieldModule, MatButtonModule, MatRadioModule, FormsModule, MatCardModule, ChartModule],
-  templateUrl: './form-main.component.html',
-  styleUrl: './form-main.component.scss'
+    selector: 'app-form-main',
+    imports: [CommonModule, MatSelectModule, MatInputModule, MatFormFieldModule, MatButtonModule, MatRadioModule, FormsModule, MatCardModule, ChartModule],
+    templateUrl: './form-main.component.html',
+    styleUrl: './form-main.component.scss'
 })
 export class FormMainComponent implements OnInit {
   finalGearMin = 200;
