@@ -2,115 +2,133 @@
   <h6>Select engine</h6>
   <div>
     <!-- Engine selection buttons -->
-    <ng-container *ngFor="let engine of engines; let idx = index">
+    @for (engine of engines; track engine; let idx = $index) {
       <button
         mat-stroked-button
         class="btn-wide"
         [ngClass]="{ active: selectedEngineIndex === idx }"
         (click)="onEngineClick($event, idx)"
-      >
+        >
         {{ engine.label }}
       </button>
-    </ng-container>
+    }
   </div>
 
   <!-- Gear controls (not inside engine selection) -->
-  <div class="form-group" *ngFor="let ratio of gearRatios; let i = index">
-    <label [for]="'customRange_' + i">{{ i + 1 }} gear</label>
-    <div
-      class="arrow arrow-left"
-      [ngClass]="{ disabled: gearLeftDisabled[i] }"
-      (click)="onArrowClick(i, 'left')"
-    ></div>
-    <input
-      (input)="onGearChange(i, $event)"
-      type="range"
-      class="custom-range"
-      min="0.08"
-      max="4"
-      step="0.02"
-      [id]="'customRange_' + i"
-      [(ngModel)]="gearRatios[i]"
-      [disabled]="isDisabled"
-    />
-    <div
-      class="arrow arrow-right"
-      [ngClass]="{ disabled: gearRightDisabled[i] }"
-      (click)="onArrowClick(i, 'right')"
-    ></div>
-    <!-- All legacy gear 5 and final drive blocks removed. Only array-based ngFor gear controls remain. -->
-  </div>
-
-  <div class="form-group m-1" *ngIf="selectedTestMode == 'fixedMultipleGears'">
-    <h5>Select gearing options for fixed gearing</h5>
-    <h5>Gear ratios</h5>
-    <div style="border: 3px solid orange; background: yellow; color: black">
-      currently it shifts at hardcoded rpm, so very close gear ratios will not
-      work that well
-    </div>
-    <div class="preset-container d-inline-flex flex-row flex-wrap">
-      @for (gearingPreset of gearingPresets; track $index) {
-        <button
-          mat-flat-button
-          (click)="onGearingPresetClick($index)"
-          [ngClass]="{ active: selectedGearingPresetIndex === $index }"
-        >
-          {{ gearingPreset.name }}
-        </button>
-      }
-    </div>
-  </div>
-
-  <div class="form-group m-1" *ngIf="selectedTestMode == 'allPossibleGears'">
-    <div class="row">
-      <label class="col col-sm-6" for="">Final drive</label>
+  @for (ratio of gearRatios; track ratio; let i = $index) {
+    <div class="form-group">
+      <label [for]="'customRange_' + i">{{ i + 1 }} gear</label>
+      <div
+        class="arrow arrow-left"
+        [ngClass]="{ disabled: gearLeftDisabled[i] }"
+        (click)="onArrowClick(i, 'left')"
+      ></div>
       <input
-        [(ngModel)]="finalDrive"
-        type="number"
-        step="0.005"
-        class="form-control form-control-sm col col-sm-6"
-      />
-    </div>
-  </div>
+        (input)="onGearChange(i, $event)"
+        type="range"
+        class="custom-range"
+        min="0.08"
+        max="4"
+        step="0.02"
+        [id]="'customRange_' + i"
+        [(ngModel)]="gearRatios[i]"
+        [disabled]="isDisabled"
+        />
+        <div
+          class="arrow arrow-right"
+          [ngClass]="{ disabled: gearRightDisabled[i] }"
+          (click)="onArrowClick(i, 'right')"
+        ></div>
+        <!-- All legacy gear 5 and final drive blocks removed. Only array-based ngFor gear controls remain. -->
+      </div>
+    }
 
-  <div>
-    <mat-card appearance="outlined">
-      <mat-card-header>
-        <h6>Summary</h6>
-      </mat-card-header>
-      <mat-card-content>
-        <div>selectedEngine: {{ selectedEngine?.label }}</div>
-        <div>selectedBodyPreset: {{ selectedBodyPreset?.label }}</div>
-        <div>Selected option: {{ selectedTestMode }}</div>
-        <div>carSettingsWeightKg: {{ carSettingsWeightKg }}</div>
-        <div>carSettingsAeroCx: {{ carSettingsAeroCx }}</div>
-        <div>carSettingsRollingRes: {{ carSettingsRollingRes }}</div>
-        <div>carSettingsMag: {{ carSettingsMaximumAccelerationG }}</div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">
-          initialSpeedKmh: {{ initialSpeedKmh }}
+    @if (selectedTestMode == 'fixedMultipleGears') {
+      <div class="form-group m-1">
+        <h5>Select gearing options for fixed gearing</h5>
+        <h5>Gear ratios</h5>
+        <div style="border: 3px solid orange; background: yellow; color: black">
+          currently it shifts at hardcoded rpm, so very close gear ratios will not
+          work that well
         </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">
-          finalGearMin: {{ finalGearMin }}
+        <div class="preset-container d-inline-flex flex-row flex-wrap">
+          @for (gearingPreset of gearingPresets; track $index) {
+            <button
+              mat-flat-button
+              (click)="onGearingPresetClick($index)"
+              [ngClass]="{ active: selectedGearingPresetIndex === $index }"
+              >
+              {{ gearingPreset.name }}
+            </button>
+          }
         </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">
-          finalGearMax: {{ finalGearMax }}
-        </div>
-        <div *ngIf="selectedTestMode != 'allPossibleGears'">
-          splits: {{ splits }}
-        </div>
-        <div *ngIf="selectedGearingPreset">
-          selected gearing: {{ selectedGearingPreset | json }}
-        </div>
-        <div>finalDrive: {{ finalDrive }}</div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+      </div>
+    }
 
-  <button mat-raised-button (click)="onRun()" [disabled]="buttonRunDisabled">
-    Run
-  </button>
+    @if (selectedTestMode == 'allPossibleGears') {
+      <div class="form-group m-1">
+        <div class="row">
+          <label class="col col-sm-6" for="">Final drive</label>
+          <input
+            [(ngModel)]="finalDrive"
+            type="number"
+            step="0.005"
+            class="form-control form-control-sm col col-sm-6"
+            />
+          </div>
+        </div>
+      }
 
-  <div class="form-group m-1" *ngIf="formfixShow">
-    <!-- <formfix *ngIf="formfixShow" [selectedMode]="selectedMode"></formfix> -->
-  </div>
-</section>
+      <div>
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <h6>Summary</h6>
+          </mat-card-header>
+          <mat-card-content>
+            <div>selectedEngine: {{ selectedEngine?.label }}</div>
+            <div>selectedBodyPreset: {{ selectedBodyPreset?.label }}</div>
+            <div>Selected option: {{ selectedTestMode }}</div>
+            <div>carSettingsWeightKg: {{ carSettingsWeightKg }}</div>
+            <div>carSettingsAeroCx: {{ carSettingsAeroCx }}</div>
+            <div>carSettingsRollingRes: {{ carSettingsRollingRes }}</div>
+            <div>carSettingsMag: {{ carSettingsMaximumAccelerationG }}</div>
+            @if (selectedTestMode != 'allPossibleGears') {
+              <div>
+                initialSpeedKmh: {{ initialSpeedKmh }}
+              </div>
+            }
+            @if (selectedTestMode != 'allPossibleGears') {
+              <div>
+                finalGearMin: {{ finalGearMin }}
+              </div>
+            }
+            @if (selectedTestMode != 'allPossibleGears') {
+              <div>
+                finalGearMax: {{ finalGearMax }}
+              </div>
+            }
+            @if (selectedTestMode != 'allPossibleGears') {
+              <div>
+                splits: {{ splits }}
+              </div>
+            }
+            @if (selectedGearingPreset) {
+              <div>
+                selected gearing: {{ selectedGearingPreset | json }}
+              </div>
+            }
+            <div>finalDrive: {{ finalDrive }}</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <button mat-raised-button (click)="onRun()" [disabled]="buttonRunDisabled">
+        Run
+      </button>
+
+      @if (formfixShow) {
+        <div class="form-group m-1">
+          <!-- <formfix *ngIf="formfixShow" [selectedMode]="selectedMode"></formfix> -->
+        </div>
+      }
+    </section>
